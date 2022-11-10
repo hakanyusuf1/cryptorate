@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { memo, useEffect, useMemo, useState } from "react";
 import Main from "./Main";
-import LOGO from "../logo.png";
+import Loader from "./Loader";
 
 const Coin = () => {
   const [coin, setCoin] = useState([]);
   const [search, setSearch] = useState("");
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const url =
     "https://api.coingecko.com/api/v3/coins/markets?vs_currency=USD&order=market_cap_desc&per_page=100&page=1&sparkline=false";
 
@@ -16,6 +18,7 @@ const Coin = () => {
       setCoin(data);
     } catch (error) {
       alert(error.message);
+    } finally {
     }
   };
   const handleSearch = (e) => {
@@ -24,6 +27,10 @@ const Coin = () => {
   };
 
   useEffect(() => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2750);
     getApi();
   }, []);
   const filtredSearch = useMemo(() => {
@@ -31,9 +38,7 @@ const Coin = () => {
       item.name.toLowerCase().includes(search.toLowerCase())
     );
   }, [coin, search]);
-  //   setInterval(() => {
-  //     getApi();
-  //   }, 10000);
+
   return (
     <div>
       <div
@@ -82,7 +87,11 @@ const Coin = () => {
         </form>
       </div>
       <div>
-        <Main data={filtredSearch} key={filtredSearch.id} />
+        {loading ? (
+          <Loader />
+        ) : (
+          <Main data={filtredSearch} key={filtredSearch.id} />
+        )}
       </div>
     </div>
   );
